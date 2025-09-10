@@ -47,8 +47,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     height > 0 &&
     weight > 0;
 
-  const handleConfirm = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleConfirm = () => {
     if (!isValid) return;
     const product: Product = {
       id: initialProduct?.id ?? Date.now(),

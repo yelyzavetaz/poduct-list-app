@@ -9,7 +9,7 @@ import {
   addProductComment,
   deleteProductComment,
 } from "../features/products/productsSlice";
-import { ProductModal } from "./ProductModal";
+import { ProductModal } from "../components/ProductModal";
 import type { Product } from "../types/product";
 import type { Comment } from "../types/comment";
 

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom"; // <-- Add this import
-import { ProductModal } from "./ProductModal";
+import { useNavigate } from "react-router-dom";
+import { ProductModal } from "../components/ProductModal";
+import { DeleteModal } from "../components/DeleteModal";
 import type { Product } from "../types/product";
 import type { AppDispatch, RootState } from "../context/store";
 import {
@@ -9,10 +10,14 @@ import {
   deleteProduct,
   fetchProducts,
 } from "../features/products/productsSlice";
+import { ProductListItem } from "../components/ProductListItem";
 
 export const ProductListView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
@@ -46,8 +51,22 @@ export const ProductListView = () => {
     }
   };
 
-  const handleDelete = (productId: number) => {
-    dispatch(deleteProduct(productId));
+  const handleDeleteClick = (product: Product) => {
+    setProductToDelete(product);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (productToDelete) {
+      dispatch(deleteProduct(productToDelete.id));
+      setDeleteModalOpen(false);
+      setProductToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setProductToDelete(null);
   };
 
   return (
@@ -71,6 +90,12 @@ export const ProductListView = () => {
         />
       )}
 
+      <DeleteModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+      />
+
       {products.length === 0 ? (
         <p className="text-gray-500">
           No products yet. Add your first product!
@@ -78,25 +103,12 @@ export const ProductListView = () => {
       ) : (
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {products.map((product) => (
-            <li
+            <ProductListItem
               key={product.id}
-              className="border rounded p-4 flex flex-col justify-between cursor-pointer"
-              onClick={() => handleProductClick(product)} // <-- Add this
-            >
-              <div>
-                <h2 className="text-lg font-semibold">{product.name}</h2>
-                <p className="text-gray-600">Count: {product.count}</p>
-              </div>
-              <button
-                className="bg-red-400 text-white px-4 py-2 rounded"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent navigation when deleting
-                  handleDelete(product.id);
-                }}
-              >
-                Delete
-              </button>
-            </li>
+              product={product}
+              onClick={handleProductClick}
+              onDelete={handleDeleteClick}
+            />
           ))}
         </ul>
       )}

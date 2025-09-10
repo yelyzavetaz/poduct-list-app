@@ -1,7 +1,9 @@
 import type { Product } from "../types/product";
 import type { Comment } from "../types/comment";
 
-const BASE_URL = import.meta.env?.VITE_API_URL ?? "http://localhost:3000";
+const BASE_URL =
+  import.meta.env?.VITE_API_URL ??
+  "https://yelyzavetaz.website/projects/product-list/api";
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
