@@ -19,6 +19,8 @@ export const ProductListView = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
+  const [sortOption, setSortOption] = useState<"name" | "count">("name");
+
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const products = useSelector((state: RootState) => state.products.products);
@@ -69,16 +71,39 @@ export const ProductListView = () => {
     setProductToDelete(null);
   };
 
+  const sortedProducts = [...products]
+    .sort((a, b) => {
+      const nameCompare = a.name.localeCompare(b.name);
+      if (nameCompare !== 0) return nameCompare;
+      return a.count - b.count;
+    })
+    .sort((a, b) => {
+      if (sortOption === "count") {
+        return a.count - b.count;
+      }
+      return 0;
+    });
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Products</h1>
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-          onClick={handleAddClick}
-        >
-          + Add Product
-        </button>
+        <div className="flex gap-4 items-center">
+          <select
+            className="border rounded px-2 py-1"
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value as "name" | "count")}
+          >
+            <option value="name">Sort by Name</option>
+            <option value="count">Sort by Count</option>
+          </select>
+          <button
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+            onClick={handleAddClick}
+          >
+            + Add Product
+          </button>
+        </div>
       </div>
 
       {isModalOpen && (
@@ -96,13 +121,13 @@ export const ProductListView = () => {
         onConfirm={handleDeleteConfirm}
       />
 
-      {products.length === 0 ? (
+      {sortedProducts.length === 0 ? (
         <p className="text-gray-500">
           No products yet. Add your first product!
         </p>
       ) : (
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {products.map((product) => (
+          {sortedProducts.map((product) => (
             <ProductListItem
               key={product.id}
               product={product}
