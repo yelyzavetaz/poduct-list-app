@@ -10,7 +10,7 @@ import {
   deleteProduct,
   fetchProducts,
 } from "../features/products/productsSlice";
-import { ProductListItem } from "../components/ProductListItem";
+import { ProductListItem } from "../components/productListItem";
 
 export const ProductListView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
